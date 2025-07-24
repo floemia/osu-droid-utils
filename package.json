@@ -1,0 +1,36 @@
+{
+  "name": "@floemia/osu-droid-utils",
+  "version": "1.0.0",
+  "description": "Utils for osu!droid and osudroid!rx.",
+  "homepage": "https://github.com/floemia/osu-droid-utils",
+  "bugs": {
+    "url": "https://github.com/floemia/osu-droid-utils/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/floemia/osu-droid-utils.git"
+  },
+  "license": "ISC",
+  "author": "floemia",
+  "types": "dist/index.d.ts",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsup"
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@rian8337/osu-base": "^4.0.0-beta.74",
+    "@rian8337/osu-difficulty-calculator": "^4.0.0-beta.74",
+    "@rian8337/osu-droid-replay-analyzer": "^4.0.0-beta.74",
+    "dotenv": "^17.2.0",
+    "lodash": "^4.17.21",
+    "tsup": "^8.5.0"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.17.20",
+    "@types/node": "^24.1.0",
+    "typescript": "^5.8.3"
+  }
+}
