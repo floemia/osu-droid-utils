@@ -22,7 +22,7 @@ import { DroidRXUser } from "@floemia/osu-droid-utils"
 // require() is also supported!
 
 ```
-## Get an user and their scores from the main server:
+## Get an user and their scores
  - From the main server
 ```ts
 // get a user!
