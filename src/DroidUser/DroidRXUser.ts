@@ -78,7 +78,7 @@ export class DroidRXUser extends DroidUser {
     }
 
     /**
-     * Gets the user's recent scores from https://v4rx.me/api/top_scores/.
+     * Gets the user's top scores from https://v4rx.me/api/top_scores/.
      * 
      * @returns A `DroidRXScore[]` containing the user's top scores.
      */

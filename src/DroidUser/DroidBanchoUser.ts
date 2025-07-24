@@ -8,6 +8,16 @@ import { DroidUser } from "./DroidUser";
  */
 export class DroidBanchoUser extends DroidUser {
     /**
+     * The `Date` this user was registered at.
+     */
+    public registered: Date;
+
+    /**
+     * The `Date` of this user's last login.
+     */
+    public last_login: Date;
+
+    /**
      * The user's scores.
      */
     public scores: DroidBanchoUserScores
@@ -33,6 +43,8 @@ export class DroidBanchoUser extends DroidUser {
                 country: response.CountryRank
             }
         }
+        this.registered = new Date(response.Registered);
+        this.last_login = new Date(response.LastLogin);
         this.scores = {
             top: response.Top50Plays.map(score => new DroidBanchoScore(score)),
             recent: response.Last50Scores.map(score => new DroidBanchoScore(score))

@@ -34,6 +34,7 @@ export interface NewDroidUserResponse {
     OverallPlaycount: number;
     OverallAccuracy: number;
     Registered: string;
+    LastLogin: string;
     Region: string;
     Supporter: number;
     CoreDeveloper: number;
