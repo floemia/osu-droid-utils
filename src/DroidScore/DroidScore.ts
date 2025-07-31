@@ -1,9 +1,9 @@
 import { Accuracy, MapInfo, ModCustomSpeed, Modes, ModMap, ModRateAdjust, ModRelax, ModUtil, } from "@rian8337/osu-base";
 import { CalculatedData, DroidScoreParameters, ScoreRank } from "~/structures";
-import lodash from "lodash";
 import { RequestCreator } from "~/RequestCreator";
 import { DroidDifficultyCalculator, DroidPerformanceCalculator, OsuDifficultyCalculator, OsuPerformanceCalculator, PerformanceCalculationOptions } from "@rian8337/osu-difficulty-calculator";
 import { DroidBanchoScore } from "./DroidBanchoScore";
+import lodash from "lodash";
 
 /**
  * A class representing a generic osu!droid score.
@@ -69,14 +69,16 @@ export class DroidScore {
     public beatmap: MapInfo | undefined;
 
     /**
-     * The calculated data of this score.
-     */
-    public calc_data: CalculatedData | undefined;
-
-    /**
      * Whether `this.calculate()` has been called.
      */
     public calculated: boolean = false;
+
+    /**
+     * The calculated difficulty and performance data of this score.
+     * 
+     * Only available after calling `this.calculate()`.
+     */
+    public data: CalculatedData | undefined;
 
     constructor(params?: DroidScoreParameters) {
         if (params) {
@@ -127,7 +129,7 @@ export class DroidScore {
     }
 
     /**
-     * Gets the beatmap of this score.
+     * Gets the beatmap of this score
      * @returns The beatmap of this score.
      */
     async getBeatmap(): Promise<MapInfo<true> | undefined> {
@@ -144,7 +146,7 @@ export class DroidScore {
      * @returns A `CalculatedData` object containing the calculated performance and difficulty attributes.
      */
     async calculate(): Promise<CalculatedData | undefined> {
-        if (this.calculated) return this.calc_data;
+        if (this.calculated) return this.data;
         const map = await this.getBeatmap();
         if (!map) return undefined;
         if (this instanceof DroidBanchoScore && !this.replay && this.id) this.replay = await this.getReplay()
@@ -176,7 +178,7 @@ export class DroidScore {
         const diff_clone = lodash.cloneDeep(map.beatmap!.difficulty);
         ModUtil.applyModsToBeatmapDifficulty(diff_clone, Modes.osu, mods, true);
 
-        this.calc_data = {
+        this.data = {
             performance: {
                 droid: droid_perf,
                 osu: osu_perf,
@@ -192,9 +194,9 @@ export class DroidScore {
             hp: diff_clone.hp
         };
         if (!this.filename) this.filename = map.fullTitle;
-        if (!this.pp) this.pp = this.calc_data.performance.droid.total;
+        if (!this.pp) this.pp = this.data.performance.droid.total;
         this.calculated = true;
-        return this.calc_data;
+        return this.data;
     }
     /**
      * Converts a score to full combo.
@@ -202,7 +204,7 @@ export class DroidScore {
      * @returns The same `DroidScore` instance converted to a FC.
      */
     static toFC(score: DroidScore): DroidScore {
-        const fc = this.clone(score);
+        const fc = DroidScore.clone(score);
         if (score.isFC()) return fc;
         const count = score.accuracy
         fc.accuracy = new Accuracy({ n300: count.n300 + count.nmiss, n100: count.n100, n50: count.n50, nmiss: 0 });

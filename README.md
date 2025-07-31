@@ -40,10 +40,10 @@ const user = await DroidRXUser.get({ uid: 177955 });
 // or, alernatively:
 const user = await DroidRXUser.get({ username: "MG_floemia" });
 
-// necessary for rx! top/recent scores have their own endpoints!
-// this format ensures compatibility if you're working
-// with both servers at the same time
-// but const recent_scores = await user.getRecentScores() works too!
+// necessary for rx - top and recent scores have their own endpoints!
+// user.scores.recent and user.scores.top are initialized with these!
+// both methods return DroidRXScore[] if you want to do something like
+// const recent_scores = await user.getRecentScores();
 await user.getRecentScores();
 await user.getTopScores();
 

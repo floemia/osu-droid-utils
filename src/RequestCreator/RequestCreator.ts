@@ -15,7 +15,10 @@ export abstract class RequestCreator {
     static async tryFetch(url: string): Promise<Response | undefined> {
         try {
             const response = await fetch(url);
-            if (response.status == 404) return undefined;
+            if (!response.ok) {
+                if (response.status == 404) return undefined;
+                throw new Error(`Request failed with status ${response.status}: ${response.statusText}`);
+            }
             return response;
         } catch (error) {
             throw new Error(`Error while fetching data: ${error}`);
@@ -39,11 +42,11 @@ export abstract class RequestCreator {
     /**
      * Requests a user's avatar from https://osudroid.moe/user/avatar/.
      * @param uid The user's ID.
-     * @returns A `string` containing the user's avatar URL.
+     * @returns An `Avatar` object containing the user's avatar URL and a `Buffer` of the image.
      */
     static async getBanchoAvatar(uid: number): Promise<string> {
         const url = `https://osudroid.moe/user/avatar/${uid}.png`;
-        const response = await this.tryFetch(url);
+        let response = await this.tryFetch(url);
         if (!response) return `https://osu.ppy.sh/images/layout/avatar-guest@2x.png`;
         return url;
     }
@@ -63,7 +66,7 @@ export abstract class RequestCreator {
         return Buffer.from(await response.arrayBuffer());
     }
 
-    static async getRXUser(params: UserRequestParameters): Promise<RXResponseUser| undefined> {
+    static async getRXUser(params: UserRequestParameters): Promise<RXResponseUser | undefined> {
         if (!params || !params.username && !params.uid) throw new MissingParametersError();
         let url = rx_page + "get_user/";
         if (params.uid) url += `?id=${params.uid}`;

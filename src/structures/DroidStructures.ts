@@ -16,6 +16,7 @@ export interface DroidScoreParameters {
     mods?: ModMap;
     beatmap?: MapInfo;
 }
+
 /**
  * The global and country ranks of a user.
  */

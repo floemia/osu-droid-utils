@@ -61,9 +61,7 @@ export class DroidRXUser extends DroidUser {
     static async get(params: UserRequestParameters): Promise<DroidRXUser | undefined> {
         const response = await RequestCreator.getRXUser(params);
         if (!response) return undefined;
-        const user = new DroidRXUser(response);
-        user.avatar_url = await RequestCreator.getRXAvatar(response.id);
-        return user;
+        return new DroidRXUser(response);
     }
 
     /**

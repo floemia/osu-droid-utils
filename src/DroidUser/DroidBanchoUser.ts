@@ -7,6 +7,7 @@ import { DroidUser } from "./DroidUser";
  * A class representing a user of the osu!droid main server.
  */
 export class DroidBanchoUser extends DroidUser {
+
     /**
      * The `Date` this user was registered at.
      */
@@ -32,7 +33,6 @@ export class DroidBanchoUser extends DroidUser {
         this.username = response.Username;
         this.country = response.Region;
         this.url = "https://osudroid.moe/profile.php?uid=" + response.UserId;
-        this.avatar_url = "";
         this.statistics = {
             playcount: response.OverallPlaycount,
             total_score: response.OverallScore,
@@ -51,6 +51,7 @@ export class DroidBanchoUser extends DroidUser {
         }
     }
 
+    
     /**
      * A method that gets a user from osu!droid's main server.
      * @param params An `Object` containing either a user's `id` or `username`.
@@ -60,7 +61,24 @@ export class DroidBanchoUser extends DroidUser {
         const response = await RequestCreator.getBanchoUser(params);
         if (!response) return undefined;
         const user = new DroidBanchoUser(response);
-        user.avatar_url = await RequestCreator.getBanchoAvatar(response.UserId);
-        return user;
+        user.avatar_url = await RequestCreator.getBanchoAvatar(user.id);
+        return new DroidBanchoUser(response);
+    }
+
+    /**
+     * Get this user's top 50 scores.
+     * 
+     * @returns A `DroidBanchoScore[]` containing this user's top 50 scores.
+     */
+    getTopScores(): DroidBanchoScore[] {
+        return this.scores.top;
+    }
+
+    /**
+     * Get this user's recent 50 scores.
+     * @returns A `DroidBanchoScore[]` containing this user's recent 50 scores.
+     */
+    getRecentScores(): DroidBanchoScore[] {
+        return this.scores.recent;
     }
 }

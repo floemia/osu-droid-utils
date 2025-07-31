@@ -1,5 +1,4 @@
 import { DroidUserStats } from "~/structures";
-
 /**
  * A class representing a generic osu!droid user.
  */
@@ -15,6 +14,11 @@ export class DroidUser {
     public username: string;
 
     /**
+     * The user's avatar URL.
+     */
+    public avatar_url: string;
+
+    /**
      * The user's country.
      */
     public country: string | null;
@@ -25,20 +29,16 @@ export class DroidUser {
     public url: string;
 
     /**
-     * The user's avatar URL.
-     */
-    public avatar_url: string;
-
-    /**
      * The user's statistics.
      */
     public statistics: DroidUserStats;
+
     constructor() {
         this.id = 0;
         this.username = "";
+        this.avatar_url = "";
         this.country = null;
         this.url = "";
-        this.avatar_url = "";
         this.statistics = {
             playcount: 0,
             total_score: 0,
