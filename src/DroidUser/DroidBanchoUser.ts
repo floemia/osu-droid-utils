@@ -62,7 +62,7 @@ export class DroidBanchoUser extends DroidUser {
         if (!response) return undefined;
         const user = new DroidBanchoUser(response);
         user.avatar_url = await RequestCreator.getBanchoAvatar(user.id);
-        return new DroidBanchoUser(response);
+        return user;
     }
 
     /**
