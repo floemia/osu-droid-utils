@@ -30,25 +30,20 @@ const user = await DroidBanchoUser.get({ uid: 177955 });
 // or, alernatively:
 const user = await DroidBanchoUser.get({ username: "MG_floemia" });
 
-const recent_scores = user.scores.recent; // a DroidBanchoScore[]
-const top_scores = user.scores.top; // another DroidBanchoScore[]
+const recent_scores = user.getRecentScores(); // a DroidBanchoScore[]
+const top_scores = user.getTopScores(); // another DroidBanchoScore[]
 ```
 - From osudroid!rx:
 ```ts
 // get a user!
-const user = await DroidRXUser.get({ uid: 177955 });
+const user = await DroidRXUser.get({ uid: 12 });
 // or, alernatively:
-const user = await DroidRXUser.get({ username: "MG_floemia" });
+const user = await DroidRXUser.get({ username: "ouigycqhjfw" });
 
-// necessary for rx - top and recent scores have their own endpoints!
-// user.scores.recent and user.scores.top are initialized with these!
-// both methods return DroidRXScore[] if you want to do something like
-// const recent_scores = await user.getRecentScores();
-await user.getRecentScores();
-await user.getTopScores();
-
-const recent_scores = user.scores.recent; // a DroidRXScore[]
-const top_scores = user.scores.top; // another DroidRXScore[]
+// get the user's scores!
+// for osudroid!rx, this is an async method!
+const recent_scores = await user.getRecentScores(); // a DroidRXScore[]
+const top_scores = await user.getTopScores(); // another DroidRXScore[]
 ```
 ## Calculate a score's performance values
 ```ts

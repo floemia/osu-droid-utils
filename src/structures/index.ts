@@ -1,4 +1,3 @@
-export * from "./DroidStructures";
-export * from "./NewDroidResponse";
+export * from "./DroidStructures"
 export * from "./RequestParameters";
 export * from "./ScoreRank";

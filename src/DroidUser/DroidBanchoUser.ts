@@ -1,7 +1,8 @@
-import { DroidBanchoUserScores, NewDroidUserResponse, UserRequestParameters } from "~/structures";
+import { DroidBanchoUserScores, UserRequestParameters } from "~/structures";
 import { DroidBanchoScore } from "~/DroidScore";
-import { RequestCreator } from "~/RequestCreator";
 import { DroidUser } from "./DroidUser";
+import { BanchoUserResponse } from "~/structures/iBancho";
+import { iBanchoAPI } from "~/RequestCreator";
 
 /**
  * A class representing a user of the osu!droid main server.
@@ -11,28 +12,25 @@ export class DroidBanchoUser extends DroidUser {
     /**
      * The `Date` this user was registered at.
      */
-    public registered: Date;
+    registered: Date;
 
     /**
      * The `Date` of this user's last login.
      */
-    public last_login: Date;
+    last_login: Date;
 
     /**
      * The user's scores.
      */
-    public scores: DroidBanchoUserScores
+    private scores: DroidBanchoUserScores
 
-    /**
-     * 
-     * @param response The raw response data from https://new.osudroid.moe/api2/frontend/profile-(uid|username)/.
-     */
-    constructor(response: NewDroidUserResponse) {
+    constructor(response: BanchoUserResponse) {
         super();
         this.id = response.UserId;
         this.username = response.Username;
         this.country = response.Region;
         this.url = "https://osudroid.moe/profile.php?uid=" + response.UserId;
+        this.avatar_url = `https://osudroid.moe/user/avatar/${response.UserId}.png`;
         this.statistics = {
             playcount: response.OverallPlaycount,
             total_score: response.OverallScore,
@@ -58,16 +56,13 @@ export class DroidBanchoUser extends DroidUser {
      * @returns A `DroidBanchoUser` instance.
      */
     static async get(params: UserRequestParameters): Promise<DroidBanchoUser | undefined> {
-        const response = await RequestCreator.getBanchoUser(params);
+        const response = await iBanchoAPI.getUser(params);
         if (!response) return undefined;
-        const user = new DroidBanchoUser(response);
-        user.avatar_url = await RequestCreator.getBanchoAvatar(user.id);
-        return user;
+        return new DroidBanchoUser(response);
     }
 
     /**
      * Get this user's top 50 scores.
-     * 
      * @returns A `DroidBanchoScore[]` containing this user's top 50 scores.
      */
     getTopScores(): DroidBanchoScore[] {

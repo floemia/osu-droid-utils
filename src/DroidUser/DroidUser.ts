@@ -6,32 +6,34 @@ export class DroidUser {
     /**
      * The user's ID.
      */
-    public id: number;
+    id: number;
 
     /**
      * The user's username.
      */
-    public username: string;
+    username: string;
 
     /**
-     * The user's avatar URL.
+     * The user's hypothetical avatar URL.
+     * 
+     * If the user has no avatar, the URL will be invalid. Proceed with caution.
      */
-    public avatar_url: string;
+    avatar_url: string;
 
     /**
      * The user's country.
      */
-    public country: string | null;
+    country: string | null;
 
     /**
      * The user's page URL.
      */
-    public url: string;
+    url: string;
 
     /**
      * The user's statistics.
      */
-    public statistics: DroidUserStats;
+    statistics: DroidUserStats;
 
     constructor() {
         this.id = 0;

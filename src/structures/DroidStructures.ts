@@ -1,4 +1,4 @@
-import { DroidPerformanceCalculator, ExtendedDroidDifficultyAttributes, OsuDifficultyAttributes, OsuPerformanceCalculator } from "@rian8337/osu-difficulty-calculator";
+import { DroidPerformanceCalculator, ExtendedDroidDifficultyAttributes, OsuDifficultyAttributes, OsuPerformanceCalculator } from "@rian8337/osu-rebalance-difficulty-calculator";
 import { DroidBanchoScore, DroidRXScore } from "~/DroidScore";
 import { ScoreRank } from "./ScoreRank";
 import { Accuracy, MapInfo, ModMap } from "@rian8337/osu-base";
@@ -15,6 +15,11 @@ export interface DroidScoreParameters {
     hash?: string;
     mods?: ModMap;
     beatmap?: MapInfo;
+}
+
+export interface UserScoresRequestParameters {
+    id: number;
+    type?: "recent" | "top";
 }
 
 /**
@@ -159,4 +164,22 @@ export interface CalculatedData {
      * Resulting HP after applying mods.
      */
     hp: number;
+}
+
+export interface DroidMods {
+    /**
+     * The mod's acronym.
+     */
+    acronym: string;
+
+    /**
+     * The mod's options.
+     */
+    settings?: {
+
+        /**
+         * `ModCustomSpeed`'s speed multiplier.
+         */
+        rateMultiplier: number;
+    }
 }

@@ -1,8 +1,9 @@
-import { NewDroidResponseScore, ReplayRequestParameters } from "~/structures";
+import { ReplayRequestParameters } from "~/structures";
+import { BanchoScoreResponse } from "~/structures/iBancho";
 import { DroidScore } from "./DroidScore";
-import { RequestCreator } from "~/RequestCreator";
 import { Accuracy, ModCustomSpeed, ModUtil } from "@rian8337/osu-base";
 import { ReplayAnalyzer } from "@rian8337/osu-droid-replay-analyzer";
+import { iBanchoAPI } from "~/RequestCreator";
 
 /**
  * A class representing a score set on osu!droid's main server.
@@ -14,10 +15,7 @@ export class DroidBanchoScore extends DroidScore {
      */
     public replay: ReplayAnalyzer | undefined;
 
-    /**
-     * @param score The raw score data from https://new.osudroid.moe or a `ReplayAnalyzer` instance.
-     */
-    constructor(score: NewDroidResponseScore | ReplayAnalyzer) {
+    constructor(score: BanchoScoreResponse | ReplayAnalyzer) {
         super();
         if (score instanceof ReplayAnalyzer) {
             const data = score.data as any;
@@ -62,7 +60,7 @@ export class DroidBanchoScore extends DroidScore {
      * @returns A `DroidBanchoScore` instance.
      */
     static async get(params: ReplayRequestParameters): Promise<DroidBanchoScore | undefined> {
-        const score_data = await RequestCreator.getBanchoReplay(params);
+        const score_data = await iBanchoAPI.getReplay(params);
         if (!score_data) return undefined;
         const replay = new ReplayAnalyzer({ scoreID: params.id });
         replay.originalODR = score_data;
@@ -72,12 +70,14 @@ export class DroidBanchoScore extends DroidScore {
 
     /**
      * Gets the replay of this score.
+     * 
+     * Might be `undefined` for scores set before 27th of May, 2025 because of major data loss. 
      * @returns A `ReplayAnalyzer` instance of this score.
      */
     async getReplay(): Promise<ReplayAnalyzer | undefined> {
         if (!this.id) return undefined;
         if (this.replay) return this.replay;
-        const replay_data = await RequestCreator.getBanchoReplay({ id: this.id });
+        const replay_data = await iBanchoAPI.getReplay({ id: this.id });
         if (!replay_data) return undefined;
         const replay = new ReplayAnalyzer({ scoreID: this.id });
         replay.originalODR = replay_data;
