@@ -1,6 +1,6 @@
-import { Accuracy, MapInfo, ModCustomSpeed, Modes, ModMap, ModRateAdjust, ModRelax, ModUtil, } from "@rian8337/osu-base";
-import { CalculatedData, DroidScoreParameters, ScoreRank } from "~/structures";
-import { DroidDifficultyCalculator, DroidPerformanceCalculator, OsuDifficultyCalculator, OsuPerformanceCalculator, PerformanceCalculationOptions } from "@rian8337/osu-rebalance-difficulty-calculator";
+import { Accuracy, MapInfo, ModCustomSpeed, Modes, ModMap, ModRateAdjust } from "@rian8337/osu-base";
+import { DroidScoreParameters, ScoreRank } from "~/structures";
+import { DroidDifficultyCalculator, DroidPerformanceCalculator, OsuDifficultyCalculator, OsuPerformanceCalculator, PerformanceCalculationOptions } from "@rian8337/osu-difficulty-calculator";
 import { DroidBanchoScore } from "./DroidBanchoScore";
 import lodash from "lodash";
 
@@ -75,9 +75,16 @@ export class DroidScore {
     /**
      * The calculated difficulty and performance data of this score.
      * 
-     * Only available after calling `this.calculate()`.
+     * Only available after calling `this.calculate("osu")`.
      */
-    private perf_data: CalculatedData | undefined;
+    private osu_perf: OsuPerformanceCalculator | undefined;
+
+    /**
+     * The calculated difficulty and performance data of this score.
+     * 
+     * Only available after calling `this.calculate("droid")`.
+     */
+    private droid_perf: DroidPerformanceCalculator | undefined;
 
     constructor(params?: DroidScoreParameters) {
         if (params) {
@@ -92,6 +99,8 @@ export class DroidScore {
             this.hash = params.hash ?? "";
             this.mods = params.mods ?? new ModMap();
             this.beatmap = params.beatmap ?? undefined;
+            this.osu_perf = undefined;
+            this.droid_perf = undefined;
         }
     }
 
@@ -140,18 +149,16 @@ export class DroidScore {
     }
 
     /**
-     * Calculates performance and difficulty attributes of the score.
+     * Calculates performance and difficulty attributes of the score. 
      * @returns A `CalculatedData` object containing the calculated performance and difficulty attributes.
      */
-    async calculate(): Promise<CalculatedData | undefined> {
-        if (this.calculated) return this.perf_data;
+    async calculate(mode: Modes): Promise<OsuPerformanceCalculator | DroidPerformanceCalculator | undefined> {
+        if (this.calculated) {
+            if (mode == "osu" && this.osu_perf) return this.osu_perf;
+            if (mode == "droid" && this.droid_perf) return this.droid_perf;
+        }
         const map = await this.getBeatmap();
         if (!map) return undefined;
-        if (this instanceof DroidBanchoScore && !this.replay && this.id) this.replay = await this.getReplay()
-        const mods = lodash.cloneDeep(this.mods);
-        mods.delete(ModRelax);
-        const droid_rating = new DroidDifficultyCalculator().calculate(map.beatmap, mods);
-        const osu_rating = new OsuDifficultyCalculator().calculate(map.beatmap, mods);
 
         const calc_options: PerformanceCalculationOptions = {
             accPercent: this.accuracy,
@@ -160,41 +167,19 @@ export class DroidScore {
         if (this instanceof DroidBanchoScore && this.replay) {
             calc_options.aimSliderCheesePenalty = this.replay.sliderCheesePenalty.aimPenalty;
             calc_options.flashlightSliderCheesePenalty = this.replay.sliderCheesePenalty.flashlightPenalty;
-            calc_options.visualSliderCheesePenalty = this.replay.sliderCheesePenalty.visualPenalty;
             calc_options.tapPenalty = this.replay.tapPenalty;
         }
-        const droid_perf = new DroidPerformanceCalculator(droid_rating).calculate({
-            accPercent: this.accuracy,
-            combo: this.max_combo,
-        });
 
-        const osu_perf = new OsuPerformanceCalculator(osu_rating).calculate({
-            accPercent: this.accuracy,
-            combo: this.max_combo,
-        });
-
-        const diff_clone = lodash.cloneDeep(map.beatmap!.difficulty);
-        ModUtil.applyModsToBeatmapDifficulty(diff_clone, Modes.osu, mods, true);
-
-        this.perf_data = {
-            performance: {
-                droid: droid_perf,
-                osu: osu_perf,
-            },
-            difficulty: {
-                droid: droid_rating,
-                osu: osu_rating,
-            },
-            bpm: this.beatmap?.bpm! * this.getFinalSpeed(),
-            cs: diff_clone.cs,
-            od: diff_clone.od,
-            ar: diff_clone.ar,
-            hp: diff_clone.hp
-        };
-        if (!this.filename) this.filename = map.fullTitle;
-        if (!this.pp) this.pp = this.perf_data.performance.droid.total;
         this.calculated = true;
-        return this.perf_data;
+        if (mode == Modes.osu) {
+            const osu_rating = new OsuDifficultyCalculator().calculate(map.beatmap, this.mods);
+            this.osu_perf = new OsuPerformanceCalculator(osu_rating).calculate(calc_options);
+            return this.osu_perf;
+        }
+        
+        const droid_rating = new DroidDifficultyCalculator().calculate(map.beatmap, this.mods);
+        this.droid_perf = new DroidPerformanceCalculator(droid_rating).calculate(calc_options);
+        return this.droid_perf;
     }
     /**
      * Converts a score to full combo.

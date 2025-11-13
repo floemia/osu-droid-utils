@@ -106,6 +106,6 @@ export class DroidBanchoScore extends DroidScore {
     isSliderCheesed(): boolean {
         if (!this.replay) return false;
         const sc = this.replay.sliderCheesePenalty;
-        return sc.aimPenalty != 1 || sc.flashlightPenalty != 1 || sc.visualPenalty != 1;
+        return sc.aimPenalty != 1 || sc.flashlightPenalty != 1;
     }
 }
