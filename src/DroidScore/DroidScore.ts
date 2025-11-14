@@ -192,6 +192,7 @@ export class DroidScore {
         const count = score.accuracy
         fc.accuracy = new Accuracy({ n300: count.n300 + count.nmiss, n100: count.n100, n50: count.n50, nmiss: 0 });
         if (fc.beatmap) fc.max_combo = fc.beatmap.maxCombo!;
+        if (fc instanceof DroidBanchoScore) { fc.osu_perf = undefined; fc.droid_perf = undefined; }
         fc.calculated = false;
         fc.id = null;
         return fc;
