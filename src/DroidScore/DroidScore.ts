@@ -157,7 +157,6 @@ export class DroidScore {
             if (mode == "osu" && this.osu_perf) return this.osu_perf;
             if (mode == "droid" && this.droid_perf) return this.droid_perf;
         }
-        console.log(this.mods.toString())
         const map = await this.getBeatmap();
         if (!map) return undefined;
 
