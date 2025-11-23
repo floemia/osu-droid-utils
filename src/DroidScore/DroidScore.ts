@@ -157,6 +157,7 @@ export class DroidScore {
             if (mode == "osu" && this.osu_perf) return this.osu_perf;
             if (mode == "droid" && this.droid_perf) return this.droid_perf;
         }
+        console.log(this.mods.toString())
         const map = await this.getBeatmap();
         if (!map) return undefined;
 
@@ -190,8 +191,9 @@ export class DroidScore {
         const fc = DroidScore.clone(score);
         if (score.isFC()) return fc;
         const count = score.accuracy
+        fc.mods = score.mods;
         fc.accuracy = new Accuracy({ n300: count.n300 + count.nmiss, n100: count.n100, n50: count.n50, nmiss: 0 });
-        if (fc.beatmap) fc.max_combo = fc.beatmap.maxCombo!;
+        fc.max_combo = fc.beatmap?.maxCombo ?? NaN;
         if (fc instanceof DroidBanchoScore) { fc.osu_perf = undefined; fc.droid_perf = undefined; }
         fc.calculated = false;
         fc.id = null;
